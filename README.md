@@ -4,7 +4,13 @@ Alpha status. Not usefull yet.
 
 ## Usage
 
-Use tab at top-left textbox to insert 10 same ups in a row.
+Для использования запустите target/ххх-standalote.jar
+
+Папка "ups" должна быть в той-же директории, что и .jar
+
+Находясь в верхнем левом текстбоксе можно нажимать Ентер для
+вставки элемента и ТАБ для вставки до 10 элементов, или пока
+они не начнут противоречить правилам.
 
 ## License
 
