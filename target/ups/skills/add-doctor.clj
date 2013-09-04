@@ -8,7 +8,7 @@
         (<= 176 skill 200) 5
         (<= 201 skill 300) 6))]
  {:type :basic
-  :name "+doctor"
+  :name (str "+" (translation :doctor))
   :requirenments
   {:skills {:doctor [0 299]}
    :fn
@@ -17,21 +17,21 @@
          (-> char :skills :free)
          (cost (-> char :skills :doctor)))
      (str
-      "Need "
+      "Нужно "
       (cost (-> char :skills :doctor))
-      " skillpoints, got "
+      " скиллпоинтов, есть "
       (-> char :skills :free))))}
   :change
-  {:skills
-   (array-map
-    :doctor
-    (fn [char val]
-     (min
-      (+ val
-       (if (some #{"tag doctor"} (:build char))
-        2
-        1))
-      300))
-    :free
-    (fn [char val]
-     (- val (cost (-> char :skills :doctor)))))}})
+  (fn [char]
+   (let [char (update-in char [:skills :doctor]
+               (fn [val]
+                (min
+                 (+ val
+                  (if (-> char :skills :tags :doctor)
+                   2
+                   1))
+                 300)))
+         char (update-in char [:skills :free]
+               (fn [val]
+                (- val (cost (-> char :skills :doctor)))))]
+    char))})

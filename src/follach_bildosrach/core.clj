@@ -97,6 +97,53 @@
 (defrecord Player [stats skills level free-traits free-skill-tags perk perk-every skillpoints-per-level hitpoints-per-level broken build ups textuals])
 (defrecord Info [])
 
+(defn translation [arg]
+ ({:st "Сила"
+   :pe "Восприятие"
+   :en "Выносливость"
+   :ch "Обояние"
+   :in "Интеллект"
+   :ag "Ловкость"
+   :lk "Удача"
+   :small-guns "Лёгкое оружие"
+   :big-guns "Тяжелое оружие"
+   :energy-weapons "Энергооружие"
+   :unarmed "Рукопашная"
+   :melee-weapons "Холодное оружие"
+   :throwing "Метательное оружие"
+   :first-aid "Санитар"
+   :doctor "Доктор"
+   :sneak "Скрытность"
+   :lockpicks "Взлом замков"
+   :steal "Воровство"
+   :traps "Ловушки"
+   :science "Наука"
+   :repair "Ремонт"
+   :speech "Красноречие"
+   :barter "Торговля"
+   :gambling "Азартные игры"
+   :outdoorsman "Скиталец"
+   :free "Свободно"
+   :radius-of-visibility "Радиус видимости"
+   :healing-rate "Уровень лечения"
+   :level "Уровень"
+   :hitpoints "Жизни"
+   :hitpoints-per-level "Жизни-за-уровень"
+   :skillpoints-per-level "Скиллпоинты-за-уровень"
+   :free-traits "Свободные трейты"
+   :free-skill-tags "Свободные скиллтеги"
+   :perk "Перк"
+   :perk-every "Перк каждые"
+   :sequence "Порядок"
+   :armor-class "Класс брони"
+   :action-points "Очки действия"
+   :max-weight "Максимальный груз"
+   :melee-damage "Рукопашные повреждения"
+   :poison-resistance "Устойчивость к яду"
+   :radiation-resistance "Устойчивость к радиации"
+   :critical "Шанс на крит"}
+  arg))
+
 (defn check-stat-deficiency [player build-step up]
  (some
   (fn [stat]
@@ -259,8 +306,7 @@
           :free 0})
         :info
         (map->Info
-         (sorted-map
-          :radius-of-visibility 23
+         {:radius-of-visibility 23
           :healing-rate 1
           :level 1
           :hitpoints 18
@@ -277,7 +323,7 @@
           :melee-damage 1
           :poison-resistance 5
           :radiation-resistance 2
-          :critical 1))
+          :critical 1})
         :broken {}
         :build build
         :ups ups-map
@@ -319,36 +365,46 @@
  MakeWidget
  (make-widget* [val]
   (grid-panel
-   :border "Stats"
+   :border "Статы"
    :columns 2
    :hgap 10
    :items (mapcat
-           (fn [arg] [(clojure.string/upper-case (name arg)) (get val (keyword arg))])
+           (fn [arg] [(translation
+                       (keyword arg))
+                      (get val (keyword arg))])
            (Stats/getBasis)))))
 
 (extend-type (type (map->Skills {}))
  MakeWidget
  (make-widget* [skills]
   (grid-panel
-   :border "Skills"
+   :border "Навыки"
    :columns 2
    :hgap 10
    :items (mapcat
-           (fn [arg] [(name arg) (get skills (keyword arg))])
+           (fn [arg] [(translation
+                       (keyword arg))
+                      (let [tag? (get (get skills :tags) (keyword arg))
+                            skill(get skills (keyword arg))]
+                       (str (if tag? [skill] skill)))])
            (Skills/getBasis)))))
 
 (extend-type (type (map->Info {}))
  MakeWidget
  (make-widget* [info]
   (grid-panel
-   :border "Info"
+   :border "Информация"
    :columns 2
    :hgap 10
    :items (into
            []
-           (mapcat
-            (fn [arg] [(name arg) (str (get info (keyword arg)))])
-            (keys info))))))
+           (apply concat
+            (sort
+             (map
+              (fn [arg] [(translation
+                          arg)
+                         (str (get info (keyword arg)))])
+              (keys info))))))))
 
 (extend-type (type (map->Player {}))
  MakeWidget
@@ -356,8 +412,8 @@
   (border-panel
    :north
    (if (seq (:broken player))
-    "ABSOLUTELY BROKEN"
-    "Looks legit")
+    "НЕРАБОЧИЙ БИЛД"
+    "Работоспособный билд")
    :west
    (border-panel
     :size [250 :by 100]
@@ -366,7 +422,7 @@
      (listbox
       :selection-mode :multi-interval
       :id :build
-      :border "Build"
+      :border "Билд (удалять Del, откат Enter)"
       :model
       (reverse
        (cons
@@ -386,7 +442,15 @@
          "beginning")))
       :listen
       (let [f (fn [w]
-               (if (= \newline (.getKeyChar w))
+               (cond
+                (= \newline (.getKeyChar w))
+                (let [v (vec (.toArray (seesaw.core/config (seesaw.core/select (to-root w) [:#build]) :model)))
+                      v (vec (reverse (pop v)))
+                      sel (selection (seesaw.core/select (to-root w) [:#build]))
+                      idx (inc (second sel))
+                      v (vec (map first (subvec v 0 idx)))]
+                 (set-player (build-gen v (:ups player))))
+                (= 127 (.getKeyCode w))
                 (let [v (vec (.toArray (seesaw.core/config (seesaw.core/select (to-root w) [:#build]) :model)))
                       v (pop v)
                       sel (selection (seesaw.core/select (to-root w) [:#build]) {:multi? true})
@@ -457,7 +521,8 @@
       :center
       (scrollable
        (listbox
-        :border "Available"
+        :selection-mode :single
+        :border "Доступно"
         :model available
         :renderer
         (string-renderer
@@ -473,7 +538,8 @@
        :items
        [(scrollable
          (listbox
-          :border "Not available"
+          :selection-mode :single
+          :border "Недоступно"
           :model not-available
           :renderer
           (string-renderer
@@ -486,7 +552,8 @@
             :key-pressed f])))
         (scrollable
          (listbox
-          :border "Stat deficient"
+          :selection-mode :single
+          :border "Перки с нехваткой статов"
           :model stat-deficient
           :renderer
           (string-renderer
@@ -502,6 +569,7 @@
  (atom ""))
 (def text-area-1
  (text
+  :border "Нажмите Enter"
   :multi-line? true
   :wrap-lines? true
   :listen [:key-typed
@@ -518,6 +586,7 @@
               (set-player (build-gen (decode (read-string (text w))) (:ups @player))))))]))
 (def text-area-2
  (text
+  :border "Нажмите f1-f12 или Enter"
   :multi-line? true
   :wrap-lines? true
   :listen [:key-typed
@@ -529,23 +598,29 @@
              (text! w (apply str (remove #{\newline \tab} (text w))))))
            :key-released
            (fn [w]
-            (cond
-             (= \newline (.getKeyChar w))
+            (letfn [(n-times [counter]
+                    (set-player
+                     (build-gen
+                      (loop [build (:build @player) counter counter]
+                       (if (or
+                            (check-requirenments
+                             (build-gen build (:ups @player))
+                             (count build)
+                             ((:ups @player) (text w)))
+                            (= 0 counter))
+                        build
+                        (recur (conj build (text w)) (dec counter))))
+                      (:ups @player))))]
              (if (seq (text w))
-              (set-player (build-gen (conj (:build @player) (text w)) (:ups @player))))
-             (= (.getKeyCode w) 9)
-             (if (seq (text w))
-              (set-player (build-gen
-                           (loop [build (:build @player) counter 10]
-                            (if (or
-                                 (check-requirenments
-                                  (build-gen build (:ups @player))
-                                  (count build)
-                                  ((:ups @player) (text w)))
-                                 (= 0 counter))
-                             build
-                             (recur (conj build (text w)) (dec counter))))
-                           (:ups @player))))))]))
+              (cond
+               (= \newline (.getKeyChar w))
+               (set-player (build-gen (conj (:build @player) (text w)) (:ups @player)))
+               (<= 112 (.getKeyCode w) 121)
+               (n-times (+ (.getKeyCode w) -112 +1))
+               (= 122 (.getKeyCode w))
+               (n-times 20)
+               (= 123 (.getKeyCode w))
+               (n-times 100)))))]))
 (def main-context
  (vertical-panel
   :items
@@ -573,7 +648,7 @@
        (:timestamp (meta arg2)))))))))
 (def history
  (listbox
-  :border "History"
+  :border "История"
   :model []
   :renderer
   (string-renderer
@@ -607,7 +682,8 @@
 (listen main-frame
  :window-closed
  (fn [w]
-  (System/exit 0)))
+  ;; (System/exit 0)
+  ))
 (bind/bind
  player
  (bind/transform (fn [player] [player]))
@@ -629,7 +705,7 @@
        (check-requirenments
         ch
         (count (:build ch))
-        (get (ups) (last (:build ch))))]
+        (get (:ups ch) (last (:build ch))))]
   (if failed?
    (text! text-area-2 "")
    (text! text-area-2 (last (:build ch))))))

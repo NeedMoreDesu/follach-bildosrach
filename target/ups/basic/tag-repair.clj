@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag repair"
+ :name (str "Тэгнуть " (translation :repair))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:repair (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

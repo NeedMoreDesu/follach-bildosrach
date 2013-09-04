@@ -8,7 +8,7 @@
         (<= 176 skill 200) 5
         (<= 201 skill 300) 6))]
  {:type :basic
-  :name "+energy-weapons"
+  :name (str "+" (translation :energy-weapons))
   :requirenments
   {:skills {:energy-weapons [0 299]}
    :fn
@@ -17,21 +17,21 @@
          (-> char :skills :free)
          (cost (-> char :skills :energy-weapons)))
      (str
-      "Need "
+      "Нужно "
       (cost (-> char :skills :energy-weapons))
-      " skillpoints, got "
+      " скиллпоинтов, есть "
       (-> char :skills :free))))}
   :change
-  {:skills
-   (array-map
-    :energy-weapons
-    (fn [char val]
-     (min
-      (+ val
-       (if (some #{"tag energy-weapons"} (:build char))
-        2
-        1))
-      300))
-    :free
-    (fn [char val]
-     (- val (cost (-> char :skills :energy-weapons)))))}})
+  (fn [char]
+   (let [char (update-in char [:skills :energy-weapons]
+               (fn [val]
+                (min
+                 (+ val
+                  (if (-> char :skills :tags :energy-weapons)
+                   2
+                   1))
+                 300)))
+         char (update-in char [:skills :free]
+               (fn [val]
+                (- val (cost (-> char :skills :energy-weapons)))))]
+    char))})

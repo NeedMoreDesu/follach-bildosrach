@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag outdoorsman"
+ :name (str "Тэгнуть " (translation :outdoorsman))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:outdoorsman (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

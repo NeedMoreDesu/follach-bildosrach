@@ -8,7 +8,7 @@
         (<= 176 skill 200) 5
         (<= 201 skill 300) 6))]
  {:type :basic
-  :name "+repair"
+  :name (str "+" (translation :repair))
   :requirenments
   {:skills {:repair [0 299]}
    :fn
@@ -17,21 +17,21 @@
          (-> char :skills :free)
          (cost (-> char :skills :repair)))
      (str
-      "Need "
+      "Нужно "
       (cost (-> char :skills :repair))
-      " skillpoints, got "
+      " скиллпоинтов, есть "
       (-> char :skills :free))))}
   :change
-  {:skills
-   (array-map
-    :repair
-    (fn [char val]
-     (min
-      (+ val
-       (if (some #{"tag repair"} (:build char))
-        2
-        1))
-      300))
-    :free
-    (fn [char val]
-     (- val (cost (-> char :skills :repair)))))}})
+  (fn [char]
+   (let [char (update-in char [:skills :repair]
+               (fn [val]
+                (min
+                 (+ val
+                  (if (-> char :skills :tags :repair)
+                   2
+                   1))
+                 300)))
+         char (update-in char [:skills :free]
+               (fn [val]
+                (- val (cost (-> char :skills :repair)))))]
+    char))})

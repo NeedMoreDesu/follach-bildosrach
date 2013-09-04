@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag unarmed"
+ :name (str "Тэгнуть " (translation :unarmed))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:unarmed (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

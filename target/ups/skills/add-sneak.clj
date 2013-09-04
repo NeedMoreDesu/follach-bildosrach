@@ -8,7 +8,7 @@
         (<= 176 skill 200) 5
         (<= 201 skill 300) 6))]
  {:type :basic
-  :name "+sneak"
+  :name (str "+" (translation :sneak))
   :requirenments
   {:skills {:sneak [0 299]}
    :fn
@@ -17,21 +17,21 @@
          (-> char :skills :free)
          (cost (-> char :skills :sneak)))
      (str
-      "Need "
+      "Нужно "
       (cost (-> char :skills :sneak))
-      " skillpoints, got "
+      " скиллпоинтов, есть "
       (-> char :skills :free))))}
   :change
-  {:skills
-   (array-map
-    :sneak
-    (fn [char val]
-     (min
-      (+ val
-       (if (some #{"tag sneak"} (:build char))
-        2
-        1))
-      300))
-    :free
-    (fn [char val]
-     (- val (cost (-> char :skills :sneak)))))}})
+  (fn [char]
+   (let [char (update-in char [:skills :sneak]
+               (fn [val]
+                (min
+                 (+ val
+                  (if (-> char :skills :tags :sneak)
+                   2
+                   1))
+                 300)))
+         char (update-in char [:skills :free]
+               (fn [val]
+                (- val (cost (-> char :skills :sneak)))))]
+    char))})

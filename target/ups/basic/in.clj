@@ -1,5 +1,5 @@
 {:type :basic
- :name "+IN"
+ :name (str "+" (translation :in))
  :requirenments
  {:stats {:in [1 9]
           :free 1}}

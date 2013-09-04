@@ -1,5 +1,5 @@
 {:type :basic
- :name "+LK"
+ :name (str "+" (translation :lk))
  :requirenments
  {:stats {:lk [1 9]
           :free 1}}

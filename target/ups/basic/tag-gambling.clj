@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag gambling"
+ :name (str "Тэгнуть " (translation :gambling))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:gambling (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

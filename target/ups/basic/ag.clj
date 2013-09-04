@@ -1,5 +1,5 @@
 {:type :basic
- :name "+AG"
+ :name (str "+" (translation :ag))
  :requirenments
  {:stats {:ag [1 9]
           :free 1}}

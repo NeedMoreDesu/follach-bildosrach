@@ -8,7 +8,7 @@
         (<= 176 skill 200) 5
         (<= 201 skill 300) 6))]
  {:type :basic
-  :name "+lockpicks"
+  :name (str "+" (translation :lockpicks))
   :requirenments
   {:skills {:lockpicks [0 299]}
    :fn
@@ -17,21 +17,21 @@
          (-> char :skills :free)
          (cost (-> char :skills :lockpicks)))
      (str
-      "Need "
+      "Нужно "
       (cost (-> char :skills :lockpicks))
-      " skillpoints, got "
+      " скиллпоинтов, есть "
       (-> char :skills :free))))}
   :change
-  {:skills
-   (array-map
-    :lockpicks
-    (fn [char val]
-     (min
-      (+ val
-       (if (some #{"tag lockpicks"} (:build char))
-        2
-        1))
-      300))
-    :free
-    (fn [char val]
-     (- val (cost (-> char :skills :lockpicks)))))}})
+  (fn [char]
+   (let [char (update-in char [:skills :lockpicks]
+               (fn [val]
+                (min
+                 (+ val
+                  (if (-> char :skills :tags :lockpicks)
+                   2
+                   1))
+                 300)))
+         char (update-in char [:skills :free]
+               (fn [val]
+                (- val (cost (-> char :skills :lockpicks)))))]
+    char))})

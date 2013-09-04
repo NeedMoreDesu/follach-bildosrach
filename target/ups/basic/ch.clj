@@ -1,5 +1,5 @@
 {:type :basic
- :name "+CH"
+ :name (str "+" (translation :ch))
  :requirenments
  {:stats {:ch [1 9]
           :free 1}}

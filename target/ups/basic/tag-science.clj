@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag science"
+ :name (str "Тэгнуть " (translation :science))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:science (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

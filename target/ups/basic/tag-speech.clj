@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag speech"
+ :name (str "Тэгнуть " (translation :speech))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:speech (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

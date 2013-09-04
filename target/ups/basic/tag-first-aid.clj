@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag first-aid"
+ :name (str "Тэгнуть " (translation :first-aid))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:first-aid (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}

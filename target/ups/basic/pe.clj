@@ -1,5 +1,5 @@
 {:type :basic
- :name "+PE"
+ :name (str "+" (translation :pe))
  :requirenments
  {:stats {:pe [1 9]
           :free 1}}

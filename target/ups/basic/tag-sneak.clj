@@ -1,7 +1,8 @@
 {:type :basic
- :name "tag sneak"
+ :name (str "Тэгнуть " (translation :sneak))
  :requirenments
  {:max 1
   :info {:free-skill-tags 1}}
  :change
- {:info {:free-skill-tags -1}}}
+ {:skills {:tags {:sneak (fn [char arg] true)}}
+  :info {:free-skill-tags -1}}}
