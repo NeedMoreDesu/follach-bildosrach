@@ -682,8 +682,7 @@
 (listen main-frame
  :window-closed
  (fn [w]
-  ;; (System/exit 0)
-  ))
+  (System/exit 0)))
 (bind/bind
  player
  (bind/transform (fn [player] [player]))
