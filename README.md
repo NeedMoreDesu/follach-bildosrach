@@ -2,7 +2,7 @@
 
 Alpha status. Not usefull yet.
 
-## Usage
+## Использование
 
 Для использования запустите target/ххх-standalone.jar
 
@@ -13,6 +13,12 @@ Alpha status. Not usefull yet.
 они не начнут противоречить правилам.
 
 Кнопочка для скачивания архива где-то там --->
+
+## Сборка
+Если хотите сами собрать из исходников, используйте
+[Leiningen](http://github.com/technomancy/leiningen/)
+(например "lein run" или "lein uberjar").
+
 
 ## License
 

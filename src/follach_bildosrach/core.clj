@@ -498,7 +498,12 @@
   :multi-line? true
   :wrap-lines? true
   :listen [:key-typed
-           (fn [w] (Thread/sleep 1) (text! w (apply str (remove #{\newline \tab} (text w)))))
+           (fn [w]
+            (Thread/sleep 1)
+            (if (not=
+                 (count (remove #{\newline \tab} (text w)))
+                 (count (text w)))
+             (text! w (apply str (remove #{\newline \tab} (text w))))))
            :key-released
            (fn [w]
             (if (= \newline (.getKeyChar w))
@@ -509,7 +514,12 @@
   :multi-line? true
   :wrap-lines? true
   :listen [:key-typed
-           (fn [w] (Thread/sleep 1) (text! w (apply str (remove #{\newline \tab} (text w)))))
+           (fn [w]
+            (Thread/sleep 1)
+            (if (not=
+                 (count (remove #{\newline \tab} (text w)))
+                 (count (text w)))
+             (text! w (apply str (remove #{\newline \tab} (text w))))))
            :key-released
            (fn [w]
             (def a w)
