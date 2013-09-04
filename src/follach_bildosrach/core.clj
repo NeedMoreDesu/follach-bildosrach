@@ -98,8 +98,16 @@
  (file
   (.getParent
    (this-jar))))
+(defn setup-config-space
+ []
+ (binding [*ns* *ns*]
+  (in-ns 'follach-bildosrach.core)
+  (refer-clojure)
+  (use '[clojure.main :only (load-script)])))
 (defn up-load [file]
- (load-string (slurp file)))
+ (binding [*ns* *ns*]
+  (in-ns 'follach-bildosrach.core)
+  (load-file (str file))))
 (defn ups-load [dir]
  (reduce
   (fn [ups up]
@@ -710,6 +718,7 @@
    (text! text-area-2 (last (:build ch))))))
 
 (defn -main [& args]
+ (setup-config-space)
  (set-player (build-gen [] (ups)))
  (->
   main-frame
