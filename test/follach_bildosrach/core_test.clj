@@ -23,3 +23,4 @@
 
 
 (printout-change [1 2 3] (fn [arg] (second arg)))
+;; (defn ups [] (ups-load (file "d:/end06/follach-bildosrach/target/ups")))

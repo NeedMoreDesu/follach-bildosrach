@@ -41,11 +41,12 @@
 (defn this-jar
  [& [ns]]
  (file
-  (-> (or ns (class *ns*))
-   .getProtectionDomain
-   .getCodeSource
-   .getLocation
-   .getPath)))
+  (java.net.URLDecoder/decode
+   (-> (or ns (class *ns*))
+    .getProtectionDomain
+    .getCodeSource
+    .getLocation
+    .getPath))))
 (defn this-dir []
  (file
   (.getParent
@@ -62,10 +63,8 @@
    (filter
     (fn [file] (not (.isDirectory file)))
     (file-seq dir)))))
-;; (defn ups []
-;;  (ups-load (file (this-dir) "ups")))
 (defn ups []
- (ups-load (file "d:/end06/follach-bildosrach/target/ups")))
+ (ups-load (file (this-dir) "ups")))
 
 
 ;;; build core
@@ -580,6 +579,7 @@
 (def main-frame
  (frame
   :title "Divine strategiest(tm) Follach(R) Buildosrach generator(C)"
+  :on-close :dispose
   :content
   (border-panel
    :north
@@ -597,6 +597,10 @@
     history)
    :center
    main-context)))
+(listen main-frame
+ :window-closed
+ (fn [w]
+  (System/exit 0)))
 (bind/bind
  player
  (bind/transform (fn [player] [player]))
