@@ -18,6 +18,24 @@
        m (.get c Calendar/MINUTE)
        s (.get c Calendar/SECOND)]
   (format "%02d:%02d:%02d" h m s)))
+(defn encode [ve]
+ (reduce
+  (fn [acc arg]
+   (if (= (peek acc) arg)
+    (if (number? (get acc (- (count acc) 2)))
+     (update-in acc [(- (count acc) 2)] inc)
+     (conj (pop acc) 2 arg))
+    (conj acc arg)))
+   []
+   ve))
+(defn decode [ve]
+ (reduce
+  (fn [acc arg]
+   (if (number? (peek acc))
+    (into (pop acc) (repeat (peek acc) arg))
+    (conj acc arg)))
+  []
+  ve))
 
 ;;; file-related
 (defn this-jar
@@ -414,14 +432,16 @@
                    player
                    (count (:build player))
                    up)]
-             (if stat-deficient?
+             (cond
+              (and stat-deficient? (= :perk (:type up)))
               (assoc res :stat-deficient
                (conj stat-deficient [(:build player) stat-deficient?]))
-              (if not-available?
-               (assoc res :not-available
-                (conj not-available [(:build player) not-available?]))
-               (assoc res :available
-                (conj available (:build player)))))))
+              not-available?
+              (assoc res :not-available
+               (conj not-available [(:build player) not-available?]))
+              :else
+              (assoc res :available
+               (conj available (:build player))))))
            {:available []
             :not-available []
             :stat-deficient []}
@@ -483,7 +503,7 @@
            (fn [w]
             (if (= \newline (.getKeyChar w))
              (if (seq (text w))
-              (set-player (build-gen (read-string (text w)) (:ups @player))))))]))
+              (set-player (build-gen (decode (read-string (text w))) (:ups @player))))))]))
 (def text-area-2
  (text
   :multi-line? true
@@ -577,7 +597,7 @@
 (defn set-player [ch]
  (reset! player ch)
  (swap! history-vec conj ch)
- (text! text-area-1 (str (:build ch)))
+ (text! text-area-1 (str (encode (:build ch))))
  (let [ch
        (update-in ch [:build]
         (fn [build]
