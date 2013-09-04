@@ -37,6 +37,53 @@
   []
   ve))
 
+(defn translation [arg]
+ ({:st "Сила"
+   :pe "Восприятие"
+   :en "Выносливость"
+   :ch "Обояние"
+   :in "Интеллект"
+   :ag "Ловкость"
+   :lk "Удача"
+   :small-guns "Лёгкое оружие"
+   :big-guns "Тяжелое оружие"
+   :energy-weapons "Энергооружие"
+   :unarmed "Рукопашная"
+   :melee-weapons "Холодное оружие"
+   :throwing "Метательное оружие"
+   :first-aid "Санитар"
+   :doctor "Доктор"
+   :sneak "Скрытность"
+   :lockpicks "Взлом замков"
+   :steal "Воровство"
+   :traps "Ловушки"
+   :science "Наука"
+   :repair "Ремонт"
+   :speech "Красноречие"
+   :barter "Торговля"
+   :gambling "Азартные игры"
+   :outdoorsman "Скиталец"
+   :free "Свободно"
+   :radius-of-visibility "Радиус видимости"
+   :healing-rate "Уровень лечения"
+   :level "Уровень"
+   :hitpoints "Жизни"
+   :hitpoints-per-level "Жизни-за-уровень"
+   :skillpoints-per-level "Скиллпоинты-за-уровень"
+   :free-traits "Свободные трейты"
+   :free-skill-tags "Свободные скиллтеги"
+   :perk "Перк"
+   :perk-every "Перк каждые"
+   :sequence "Порядок"
+   :armor-class "Класс брони"
+   :action-points "Очки действия"
+   :max-weight "Максимальный груз"
+   :melee-damage "Рукопашные повреждения"
+   :poison-resistance "Устойчивость к яду"
+   :radiation-resistance "Устойчивость к радиации"
+   :critical "Шанс на крит"}
+  arg))
+
 ;;; file-related
 (defn this-jar
  [& [ns]]
@@ -96,53 +143,6 @@
 (defrecord Skills [small-guns big-guns energy-weapons unarmed melee-weapons throwing first-aid doctor sneak lockpicks steal traps science repair speech barter gambling outdoorsman free])
 (defrecord Player [stats skills level free-traits free-skill-tags perk perk-every skillpoints-per-level hitpoints-per-level broken build ups textuals])
 (defrecord Info [])
-
-(defn translation [arg]
- ({:st "Сила"
-   :pe "Восприятие"
-   :en "Выносливость"
-   :ch "Обояние"
-   :in "Интеллект"
-   :ag "Ловкость"
-   :lk "Удача"
-   :small-guns "Лёгкое оружие"
-   :big-guns "Тяжелое оружие"
-   :energy-weapons "Энергооружие"
-   :unarmed "Рукопашная"
-   :melee-weapons "Холодное оружие"
-   :throwing "Метательное оружие"
-   :first-aid "Санитар"
-   :doctor "Доктор"
-   :sneak "Скрытность"
-   :lockpicks "Взлом замков"
-   :steal "Воровство"
-   :traps "Ловушки"
-   :science "Наука"
-   :repair "Ремонт"
-   :speech "Красноречие"
-   :barter "Торговля"
-   :gambling "Азартные игры"
-   :outdoorsman "Скиталец"
-   :free "Свободно"
-   :radius-of-visibility "Радиус видимости"
-   :healing-rate "Уровень лечения"
-   :level "Уровень"
-   :hitpoints "Жизни"
-   :hitpoints-per-level "Жизни-за-уровень"
-   :skillpoints-per-level "Скиллпоинты-за-уровень"
-   :free-traits "Свободные трейты"
-   :free-skill-tags "Свободные скиллтеги"
-   :perk "Перк"
-   :perk-every "Перк каждые"
-   :sequence "Порядок"
-   :armor-class "Класс брони"
-   :action-points "Очки действия"
-   :max-weight "Максимальный груз"
-   :melee-damage "Рукопашные повреждения"
-   :poison-resistance "Устойчивость к яду"
-   :radiation-resistance "Устойчивость к радиации"
-   :critical "Шанс на крит"}
-  arg))
 
 (defn check-stat-deficiency [player build-step up]
  (some
