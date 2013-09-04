@@ -364,6 +364,8 @@
     :center
     (scrollable
      (listbox
+      :selection-mode :multi-interval
+      :id :build
       :border "Build"
       :model
       (reverse
@@ -371,21 +373,27 @@
         [[] []]
         (map-indexed
          (fn [idx arg]
-          [(subvec (:build player) 0 (inc idx))
+          [(get (:build player) idx)
+           idx
            (get (:broken player) idx)])
          (:build player))))
       :renderer
       (string-renderer
-       (fn [[build broken-text]]
+       (fn [[build _ broken-text]]
         (if (seq build)
-         (str (last build)
+         (str build
           (if broken-text (str " !!! " broken-text)))
          "beginning")))
       :listen
       (let [f (fn [w]
-               (set-player (build-gen (first (selection w)) (:ups player))))]
-       [:mouse-clicked f
-        :key-pressed f]))))
+               (if (= \newline (.getKeyChar w))
+                (let [v (vec (.toArray (seesaw.core/config (seesaw.core/select (to-root w) [:#build]) :model)))
+                      v (pop v)
+                      sel (selection (seesaw.core/select (to-root w) [:#build]) {:multi? true})
+                      sel-filter (set sel)
+                      v (vec (reverse (map first (remove sel-filter v))))]
+                 (set-player (build-gen v (:ups player))))))]
+       [:key-released f]))))
    :center
    (border-panel
     :west
@@ -521,12 +529,11 @@
              (text! w (apply str (remove #{\newline \tab} (text w))))))
            :key-released
            (fn [w]
-            (def a w)
             (cond
              (= \newline (.getKeyChar w))
              (if (seq (text w))
               (set-player (build-gen (conj (:build @player) (text w)) (:ups @player))))
-             (= (.getKeyCode a) 9)
+             (= (.getKeyCode w) 9)
              (if (seq (text w))
               (set-player (build-gen
                            (loop [build (:build @player) counter 10]
