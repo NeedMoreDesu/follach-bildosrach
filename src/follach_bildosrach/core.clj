@@ -643,18 +643,21 @@
            :key-released
            (fn [w]
             (letfn [(n-times [counter]
-                    (set-player
-                     (build-gen
-                      (loop [build (:build @player) counter counter]
-                       (if (or
-                            (check-requirenments
-                             (build-gen build (:ups @player))
-                             (count build)
-                             ((:ups @player) (text w)))
-                            (= 0 counter))
-                        build
-                        (recur (conj build (text w)) (dec counter))))
-                      (:ups @player))))]
+                     (set-player
+                      (build-gen
+                       (if (check-requirenments
+                            @player
+                            (text w))
+                        (into (:build @player) (repeat counter (text w)))
+                        (loop [build (:build @player) counter counter]
+                         (if (or
+                              (check-requirenments
+                               (build-gen build (:ups @player))
+                               (text w))
+                              (= 0 counter))
+                          build
+                          (recur (conj build (text w)) (dec counter)))))
+                       (:ups @player))))]
              (if (seq (text w))
               (cond
                (= \newline (.getKeyChar w))
