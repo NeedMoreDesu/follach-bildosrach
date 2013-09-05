@@ -168,73 +168,90 @@
       (if (< player-stat req-min)
        (str "Player's " (name stat) " is less than " req-min))))))
   (map keyword (Stats/getBasis))))
-(defn check-requirenments [player build-step up]
- (or
-  (if (:hardcap (:requirenments up))
-   (if (= (:perk (:info player)) :softcap)
-    "Hardcap perk after softcap"))
-  (if (and
-       (:max (:requirenments up))
-       (>
-        (build-occur
-         (subvec (:build player) 0 build-step)
-         (:name up))
-        (:max (:requirenments up))))
-   "Maximum number reached")
-  (some
-   (fn [stat]
-    (let [req-min (get (:stats (:requirenments up)) stat)
-          player-stat (get (:stats player) stat)]
-     (if req-min
-      (if (vector? req-min)
-       (let [[req-min req-max] req-min]
-        (cond
-         (> player-stat req-max)
-         (str "Player's " (name stat) " is more than " req-max)
-         (< player-stat req-min)
-         (str "Player's " (name stat) " is less than " req-min)))
-       (if (< player-stat req-min)
-        (str "Player's " (name stat) " is less than " req-min))))))
-   (map keyword (Stats/getBasis)))
-  (some
-   (fn [stat]
-    (let [req-min (get (:skills (:requirenments up)) stat)
-          player-stat (get (:skills player) stat)]
-     (if req-min
-      (if (vector? req-min)
-       (let [[req-min req-max] req-min]
-        (cond
-         (> player-stat req-max)
-         (str "Player's " (name stat) " is more than " req-max)
-         (< player-stat req-min)
-         (str "Player's " (name stat) " is less than " req-min)))
-       (if (< player-stat req-min)
-        (str "Player's " (name stat) " is less than " req-min))))))
-   (map keyword (Skills/getBasis)))
-  (some
-   (fn [stat]
-    (let [req-min (get (:info (:requirenments up)) stat)
-          player-stat (get (:info player) stat)]
-     (if req-min
-      (if (vector? req-min)
-       (let [[req-min req-max] req-min]
-        (cond
-         (> player-stat req-max)
-         (str "Player's " (name stat) " is more than " req-max)
-         (< player-stat req-min)
-         (str "Player's " (name stat) " is less than " req-min)))
-       (if (< player-stat req-min)
-        (str "Player's " (name stat) " is less than " req-min))))))
-   (keys (:info player)))
-  (if (and (:level (:requirenments up))
-       (< (:level (:info player)) (:level (:requirenments up))))
-   (str "Low level, need " (:level (:requirenments up))))
-  (if (:fn (:requirenments up))
-   ((:fn (:requirenments up)) player))
-  (if (and
-       (not (:perk (:info player)))
-       (= (:type up) :perk))
-   "No perk points left")))
+(defn check-requirenments
+ ([player up]
+  (let [up
+        (if (string? up) ((:ups player) up) up)
+        player
+        (update-in player [:build]
+         (fn [build] (build-add build (:name up))))
+        broken?
+        (check-requirenments
+         player
+         (count (:build player))
+         up)]
+        broken?))
+ ([player build-step up]
+  (let [up
+        (if (string? up) ((:ups player) up) up)]
+   (or
+    (if (not up)
+     "404: perk not found")
+    (if (:hardcap (:requirenments up))
+     (if (= (:perk (:info player)) :softcap)
+      "Hardcap perk after softcap"))
+    (if (and
+         (:max (:requirenments up))
+         (>
+          (build-occur
+           (subvec (:build player) 0 build-step)
+           (:name up))
+          (:max (:requirenments up))))
+     "Maximum number reached")
+    (some
+     (fn [stat]
+      (let [req-min (get (:stats (:requirenments up)) stat)
+            player-stat (get (:stats player) stat)]
+       (if req-min
+        (if (vector? req-min)
+         (let [[req-min req-max] req-min]
+          (cond
+           (> player-stat req-max)
+           (str "Player's " (name stat) " is more than " req-max)
+           (< player-stat req-min)
+           (str "Player's " (name stat) " is less than " req-min)))
+         (if (< player-stat req-min)
+          (str "Player's " (name stat) " is less than " req-min))))))
+     (map keyword (Stats/getBasis)))
+    (some
+     (fn [stat]
+      (let [req-min (get (:skills (:requirenments up)) stat)
+            player-stat (get (:skills player) stat)]
+       (if req-min
+        (if (vector? req-min)
+         (let [[req-min req-max] req-min]
+          (cond
+           (> player-stat req-max)
+           (str "Player's " (name stat) " is more than " req-max)
+           (< player-stat req-min)
+           (str "Player's " (name stat) " is less than " req-min)))
+         (if (< player-stat req-min)
+          (str "Player's " (name stat) " is less than " req-min))))))
+     (map keyword (Skills/getBasis)))
+    (some
+     (fn [stat]
+      (let [req-min (get (:info (:requirenments up)) stat)
+            player-stat (get (:info player) stat)]
+       (if req-min
+        (if (vector? req-min)
+         (let [[req-min req-max] req-min]
+          (cond
+           (> player-stat req-max)
+           (str "Player's " (name stat) " is more than " req-max)
+           (< player-stat req-min)
+           (str "Player's " (name stat) " is less than " req-min)))
+         (if (< player-stat req-min)
+          (str "Player's " (name stat) " is less than " req-min))))))
+     (keys (:info player)))
+    (if (and (:level (:requirenments up))
+         (< (:level (:info player)) (:level (:requirenments up))))
+     (str "Low level, need " (:level (:requirenments up))))
+    (if (:fn (:requirenments up))
+     ((:fn (:requirenments up)) player))
+    (if (and
+         (not (:perk (:info player)))
+         (= (:type up) :perk))
+     "No perk points left")))))
 (letfn [(keyseqs [m seq]
          (if (map? m)
           (reverse
@@ -250,34 +267,32 @@
              (keys m))))
           seq))]
  (defn apply-change [player up]
-  (if (map? (:change up))
-   (reduce
-    (fn [player keyseq]
-     (update-in player keyseq
-      (fn [val]
-       (if (number? (get-in (:change up) keyseq))
-        (+ val (get-in (:change up) keyseq))
-        ((get-in (:change up) keyseq) player val)))))
-    player
-    (keyseqs (:change up) []))
-   ((:change up) player))))
+  (let [up
+        (if (string? up) ((:ups player) up) up)]
+   (if (:change up)
+    (if (map? (:change up))
+     (reduce
+      (fn [player keyseq]
+       (update-in player keyseq
+        (fn [val]
+         (if (number? (get-in (:change up) keyseq))
+          (+ val (get-in (:change up) keyseq))
+          ((get-in (:change up) keyseq) player val)))))
+      player
+      (keyseqs (:change up) []))
+     ((:change up) player))
+    player))))
 (defn build-gen
  ([build ups-map]
   (first
    (reduce
-    (fn [[player i] up-name]
-     [(let [up (get ups-map up-name)]
-       (if up
-        (if (not (check-requirenments player (inc i) up))
-         (apply-change player up)
-         (update-in
-          (apply-change player up)
-          [:broken]
-          #(assoc % i (check-requirenments player (inc i) up))))
-        (update-in
-         player
-         [:broken]
-         #(assoc % i "404: perk not found"))))
+    (fn [[player i] up]
+     [(if (not (check-requirenments player (inc i) up))
+       (apply-change player up)
+       (update-in
+        (apply-change player up)
+        [:broken]
+        #(assoc % i (check-requirenments player (inc i) up))))
       (inc i)])
     [(with-meta
       (map->Player
@@ -369,33 +384,39 @@
  (make-widget* [keyw]
   (make-widget* (name keyw))))
 
-(extend-type (type (map->Stats {}))
- MakeWidget
- (make-widget* [val]
-  (grid-panel
-   :border "Статы"
-   :columns 2
-   :hgap 10
-   :items (mapcat
-           (fn [arg] [(translation
-                       (keyword arg))
-                      (get val (keyword arg))])
-           (Stats/getBasis)))))
-
-(extend-type (type (map->Skills {}))
- MakeWidget
- (make-widget* [skills]
-  (grid-panel
-   :border "Навыки"
-   :columns 2
-   :hgap 10
-   :items (mapcat
-           (fn [arg] [(translation
-                       (keyword arg))
-                      (let [tag? (get (get skills :tags) (keyword arg))
-                            skill(get skills (keyword arg))]
-                       (str (if tag? [skill] skill)))])
-           (Skills/getBasis)))))
+(defn mk-widget [val player keys border]
+ (grid-panel
+  :border border
+  :columns 2
+  :hgap 10
+  :items
+  (mapcat
+   (fn [arg]
+    (let [up (str "+"
+              (translation
+               (keyword arg)))
+          labelizer
+          (fn [arg]
+           (let [l (label
+                    :halign :center
+                    :text arg)]
+            (listen l
+             :mouse-clicked
+             (fn[w]
+              (set-player
+               (build-gen
+                (conj
+                 (:build player)
+                 up)
+                (:ups player)))))
+            l))]
+     (map labelizer
+      [(translation
+        (keyword arg))
+       (if (get (-> player :skills :tags) (keyword arg))
+        (str [(get val (keyword arg))])
+        (str (get val (keyword arg))))])))
+   keys)))
 
 (extend-type (type (map->Info {}))
  MakeWidget
@@ -434,7 +455,7 @@
       :model
       (reverse
        (cons
-        [[] []]
+        [[]]
         (map-indexed
          (fn [idx arg]
           [(get (:build player) idx)
@@ -452,16 +473,23 @@
       (let [f (fn [w]
                (cond
                 (= \newline (.getKeyChar w))
-                (let [v (vec (.toArray (seesaw.core/config (seesaw.core/select (to-root w) [:#build]) :model)))
-                      v (vec (reverse (pop v)))
-                      sel (selection (seesaw.core/select (to-root w) [:#build]))
-                      idx (inc (second sel))
-                      v (vec (map first (subvec v 0 idx)))]
-                 (set-player (build-gen v (:ups player))))
+                (if (=
+                     [[]]
+                     (selection
+                      (select
+                       (to-root w)
+                       [:#build])))
+                 (set-player (build-gen [] (:ups player)))
+                 (let [v (vec (.toArray (config (select (to-root w) [:#build]) :model)))
+                       v (vec (reverse (pop v)))
+                       sel (selection (select (to-root w) [:#build]))
+                       idx (inc (second sel))
+                       v (vec (map first (subvec v 0 idx)))]
+                  (set-player (build-gen v (:ups player)))))
                 (= 127 (.getKeyCode w))
-                (let [v (vec (.toArray (seesaw.core/config (seesaw.core/select (to-root w) [:#build]) :model)))
+                (let [v (vec (.toArray (config (select (to-root w) [:#build]) :model)))
                       v (pop v)
-                      sel (selection (seesaw.core/select (to-root w) [:#build]) {:multi? true})
+                      sel (selection (select (to-root w) [:#build]) {:multi? true})
                       sel-filter (set sel)
                       v (vec (reverse (map first (remove sel-filter v))))]
                  (set-player (build-gen v (:ups player))))))]
@@ -472,7 +500,11 @@
     (border-panel
      :west
      (scrollable
-      (:stats player))
+      (mk-widget
+       (:stats player)
+       player
+       (Stats/getBasis)
+       "Статы (кликабельно)"))
      :center
      (scrollable
       (text
@@ -485,7 +517,11 @@
      :south
      (border-panel
       :center
-      (:skills player)
+      (mk-widget
+       (:skills player)
+       player
+       (Skills/getBasis)
+       "Навыки (кликабельно)")
       :west
       (:info player)))
     :center
@@ -702,20 +738,7 @@
  (reset! player ch)
  (swap! history-vec conj ch)
  (text! text-area-1 (str (encode (:build ch))))
- (let [ch
-       (update-in ch [:build]
-        (fn [build]
-         (build-add
-          build
-          (last (:build ch)))))
-       failed?
-       (check-requirenments
-        ch
-        (count (:build ch))
-        (get (:ups ch) (last (:build ch))))]
-  (if failed?
-   (text! text-area-2 "")
-   (text! text-area-2 (last (:build ch))))))
+ (text! text-area-2 (last (:build ch))))
 
 (defn -main [& args]
  (setup-config-space)
