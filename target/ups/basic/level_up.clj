@@ -1,5 +1,5 @@
 {:type :basic
- :name "+УРОВЕНЬ"
+ :name "+ УРОВЕНЬ"
  :requirenments
  {:stats {:free [0 0]}
   :info {:free-skill-tags [0 0]}}
