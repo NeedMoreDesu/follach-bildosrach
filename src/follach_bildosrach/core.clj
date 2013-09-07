@@ -93,7 +93,8 @@
     .getProtectionDomain
     .getCodeSource
     .getLocation
-    .getPath))))
+    .getPath)
+   "utf-8")))
 (defn this-dir []
  (file
   (.getParent

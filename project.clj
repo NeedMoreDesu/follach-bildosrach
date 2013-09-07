@@ -6,4 +6,5 @@
  :dependencies [[org.clojure/clojure "1.5.1"]
                 [seesaw "1.4.2"]]
  :javac-options ["-target" "1.6" "-source" "1.6"]
+ :uberjar-name "follach-bildosrach.jar"
  :main follach-bildosrach.core)

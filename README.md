@@ -1,17 +1,16 @@
 # follach-bildosrach
 
-Alpha status. Not usefull yet.
+Alpha status. Пока ещё бесполезно.
 
 ## Использование
 
-Для использования запустите target/ххх-standalone.jar
-
-Папка "ups" должна быть в той-же директории, что и .jar
-
-Кнопочка для скачивания архива где-то там --->
+Кнопочка для скачивания .zip архива где-то там --->
+Запускать через ярлык "# калькулятор" или "target/follach-bildosrach.jar".
+Для работы follach-bildosrach.jar нужна папка "ups".
 
 ## Сборка
-Если хотите сами собрать из исходников, используйте
+Если вы программист и хотите сами собрать из исходников,
+используйте
 [Leiningen](http://github.com/technomancy/leiningen/)
 (например "lein run" или "lein uberjar").
 
