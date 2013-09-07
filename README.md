@@ -5,13 +5,13 @@ Alpha status. Пока ещё бесполезно.
 ## Использование
 
 Кнопочка для скачивания .zip архива где-то там --->
+
 Запускать через ярлык "# калькулятор" или "target/follach-bildosrach.jar".
+
 Для работы follach-bildosrach.jar нужна папка "ups".
 
 ## Сборка
-Если вы программист и хотите сами собрать из исходников,
-используйте
-[Leiningen](http://github.com/technomancy/leiningen/)
+Если вы программист и хотите сами собрать из исходников, используйте [Leiningen](http://github.com/technomancy/leiningen/)
 (например "lein run" или "lein uberjar").
 
 
